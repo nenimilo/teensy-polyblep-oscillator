@@ -191,6 +191,7 @@ class AudioBandlimitedOsci : public AudioStream
     }
 
     void portamentoTime(uint8_t oscillator, float seconds) {
+      //set how long the oscillator sweeps up or down to the new frequency
       switch (oscillator) {
         case 1: {
             osc1_portamentoTime = seconds;
@@ -257,10 +258,12 @@ class AudioBandlimitedOsci : public AudioStream
     }
 
     void addNote() {
+      //Call with your "noteOn" when hitting a new note, this is needed for portamento
       notesPlaying++;
     }
 
     void removeNote() {
+      //Call with your "noteOff" command
       if (notesPlaying > 0) {
         notesPlaying--;
       }
