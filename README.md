@@ -7,17 +7,17 @@ This Software only works together with the Teensy Audio Library.
 In your Arduino Sketch, #include "polyBlepOscillator.h" and use as an Audio Object.
 
 Inputs:
-0 - Frequency Modulation for Oscillator 1
-1 - Pulse Width Modulation for Oscillator 1
-2 - Frequency Modulation for Oscillator 2
-3 - Pulse Width Modulation for Oscillator 2
-4 - Frequency Modulation for Oscillator 3
-5 - Pulse Width Modulation for Oscillator 3
+- Input 0: Frequency Modulation for Oscillator 1
+- Input 1: Pulse Width Modulation for Oscillator 1
+- Input 2: Frequency Modulation for Oscillator 2
+- Input 3: Pulse Width Modulation for Oscillator 2
+- Input 4: Frequency Modulation for Oscillator 3
+- Input 5: Pulse Width Modulation for Oscillator 3
 
 Outputs:
-0 - Output Oscillator 1
-1 - Output Oscillator 2
-2 - Output Oscillator 3
+- Output 0: Output Oscillator 1
+- Output 1: Output Oscillator 2
+- Output 2: Output Oscillator 3
 
 Functions: 
 When setting the parameters, the first argument is the oscillator
