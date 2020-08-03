@@ -37,25 +37,21 @@ void AudioBandlimitedOsci::update() {
 
 
     //oscillator 1:
-    
     if (osc1_portamentoSamples > 0 && osc1_currentPortamentoSample++ < osc1_portamentoSamples) {
       frequency1 += osc1_portamentoIncrement;
     }
-    
+
     //frequency Modulation:
     if (fm1 && osc1_pitchModAmount > 0) {
-
       int32_t n = fm1->data[i] * osc1_pitchModAmount;
-      int32_t ipart = n >> 27; 
-      n = n & 0x7FFFFFF;    
-
+      int32_t ipart = n >> 27;
+      n = n & 0x7FFFFFF;
       n = (n + 134217728) << 3;
       n = multiply_32x32_rshift32_rounded(n, n);
       n = multiply_32x32_rshift32_rounded(n, 715827883) << 3;
       n = n + 715827882;
 
       uint32_t scale = n >> (15 - ipart);
-
       osc1_freq = frequency1 * scale * 0.00003051757;
     } else {
       osc1_freq = frequency1;
@@ -81,17 +77,15 @@ void AudioBandlimitedOsci::update() {
     //frequency Modulation:
     if (fm2 && osc2_pitchModAmount > 0.0f) {
 
-      int32_t n = fm2->data[i] * osc2_pitchModAmount; 
-      int32_t ipart = n >> 27; 
-      n = n & 0x7FFFFFF;    
-
+      int32_t n = fm2->data[i] * osc2_pitchModAmount;
+      int32_t ipart = n >> 27;
+      n = n & 0x7FFFFFF;
       n = (n + 134217728) << 3;
       n = multiply_32x32_rshift32_rounded(n, n);
       n = multiply_32x32_rshift32_rounded(n, 715827883) << 3;
       n = n + 715827882;
 
       uint32_t scale = n >> (15 - ipart);
-
       osc2_freq = frequency2 * scale * 0.00003051757;
     } else {
       osc2_freq = frequency2;
@@ -116,18 +110,16 @@ void AudioBandlimitedOsci::update() {
 
     //frequency Modulation:
     if (fm3 && osc3_pitchModAmount > 0.0f) {
-      
-      int32_t n = fm3->data[i] * osc3_pitchModAmount; 
-      int32_t ipart = n >> 27; 
-      n = n & 0x7FFFFFF;         
 
+      int32_t n = fm3->data[i] * osc3_pitchModAmount;
+      int32_t ipart = n >> 27;
+      n = n & 0x7FFFFFF;
       n = (n + 134217728) << 3;
       n = multiply_32x32_rshift32_rounded(n, n);
       n = multiply_32x32_rshift32_rounded(n, 715827883) << 3;
       n = n + 715827882;
 
       uint32_t scale = n >> (15 - ipart);
-
       osc3_freq = frequency3 * scale * 0.00003051757;
     } else {
       osc3_freq = frequency3;
@@ -144,11 +136,6 @@ void AudioBandlimitedOsci::update() {
     } else if (osc3_pulseWidth > 0.999) {
       osc3_pulseWidth = 0.999;
     }
-
-
-
-
-
 
     osc1Step(); // This steps actually all oscillators.
 
@@ -215,6 +202,10 @@ inline void AudioBandlimitedOsci::osc3Step() {
   //triangle and sawtooth wave
   switch (osc3_waveform) {
     case 0: {
+        /*
+          The sine function is a bit processor intensive, I just added it for the sake of completeness.
+          If you depend on fast sine oscillators, use the ones in the Teensy Audio Library, sinewaves are naturally bandlimited
+        */
         osc3_t -= floorf(osc3_t);
         osc3_output = arm_sin_f32(osc3_t * TWO_PI);
       }

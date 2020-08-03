@@ -280,13 +280,12 @@ class AudioBandlimitedOsci : public AudioStream
 
     audio_block_t *inputQueueArray[6];
 
+    private:
+    
     uint8_t notesPlaying;
 
-    float frequency1; //semi-stable (except for portamento)
-
-    
-    
-    float pulseWidth1; //stable
+    float frequency1;
+    float pulseWidth1; 
     float osc1_freq = 0;
     float osc1_pulseWidth = 0.5;
     float osc1_gain = 0;
@@ -320,9 +319,6 @@ class AudioBandlimitedOsci : public AudioStream
     bool osc2_pulseStage = false;
     float osc2_pwmAmount = 0.5;
     uint32_t osc2_pitchModAmount = 4096;
-    
-    
-    
     float osc2_portamentoTime;
     float osc2_portamentoIncrement;
     uint64_t osc2_portamentoSamples = 0;
@@ -348,7 +344,5 @@ class AudioBandlimitedOsci : public AudioStream
     uint64_t osc3_portamentoSamples = 0;
     uint64_t osc3_currentPortamentoSample;
     
-
-  private:
 
 };
