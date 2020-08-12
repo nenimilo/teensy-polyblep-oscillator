@@ -83,6 +83,7 @@ void loop() {
   delay(1000);
   Serial.println("Processor usage Max: " + String(AudioProcessorUsageMax()));
   Serial.println("Processor usage of the osci: " + String(osci.processorUsageMax()));
+  Serial.println("Memory usage Max:" + String(AudioMemoryUsageMax()));
   Serial.println();
   
 }

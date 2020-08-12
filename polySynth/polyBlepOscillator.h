@@ -284,8 +284,8 @@ class AudioBandlimitedOsci : public AudioStream
     
     uint8_t notesPlaying;
 
-    float frequency1;
-    float pulseWidth1; 
+    float frequency1 = 0;
+    float pulseWidth1 = 0; 
     float osc1_freq = 0;
     float osc1_pulseWidth = 0.5;
     float osc1_gain = 0;
@@ -293,20 +293,20 @@ class AudioBandlimitedOsci : public AudioStream
     float osc1_output = 0;
     float osc1_blepDelay = 0;
     float osc1_t = 0;
-    float osc1_dt;
-    float osc1_widthDelay;
+    float osc1_dt = 0;
+    float osc1_widthDelay = 0;
     bool osc1_pulseStage = false;
     float osc1_pwmAmount = 0.5;
     uint32_t osc1_pitchModAmount = 4096;
-    float osc1_portamentoTime;
-    float osc1_portamentoIncrement;
+    float osc1_portamentoTime = 0;
+    float osc1_portamentoIncrement = 0;
     uint64_t osc1_portamentoSamples = 0;
-    uint64_t osc1_currentPortamentoSample;
+    uint64_t osc1_currentPortamentoSample = 0;
     
 
 
-    float frequency2;
-    float pulseWidth2;
+    float frequency2 = 0;
+    float pulseWidth2 = 0;
     float osc2_freq = 0;
     float osc2_pulseWidth = 0.5;
     float osc2_gain = 0;
@@ -314,19 +314,19 @@ class AudioBandlimitedOsci : public AudioStream
     float osc2_output = 0;
     float osc2_blepDelay = 0;
     float osc2_t = 0;
-    float osc2_dt;
-    float osc2_widthDelay;
+    float osc2_dt = 0;
+    float osc2_widthDelay = 0;
     bool osc2_pulseStage = false;
     float osc2_pwmAmount = 0.5;
     uint32_t osc2_pitchModAmount = 4096;
-    float osc2_portamentoTime;
-    float osc2_portamentoIncrement;
+    float osc2_portamentoTime = 0;
+    float osc2_portamentoIncrement = 0;
     uint64_t osc2_portamentoSamples = 0;
-    uint64_t osc2_currentPortamentoSample;
+    uint64_t osc2_currentPortamentoSample = 0;
     
 
-    float frequency3;
-    float pulseWidth3;
+    float frequency3 = 0;
+    float pulseWidth3 = 0;
     float osc3_freq = 0;
     float osc3_pulseWidth = 0.5;
     float osc3_gain = 0;
@@ -334,15 +334,15 @@ class AudioBandlimitedOsci : public AudioStream
     float osc3_output = 0;
     float osc3_blepDelay = 0;
     float osc3_t = 0;
-    float osc3_dt;
-    float osc3_widthDelay;
+    float osc3_dt = 0;
+    float osc3_widthDelay = 0;
     bool osc3_pulseStage = false;
     float osc3_pwmAmount = 0.5;
     uint32_t osc3_pitchModAmount = 4096;
-    float osc3_portamentoTime;
-    float osc3_portamentoIncrement;
+    float osc3_portamentoTime = 0;
+    float osc3_portamentoIncrement = 0;
     uint64_t osc3_portamentoSamples = 0;
-    uint64_t osc3_currentPortamentoSample;
+    uint64_t osc3_currentPortamentoSample = 0;
     
 
 };
