@@ -69,16 +69,16 @@ class AudioBandlimitedOsci : public AudioStream
 
       switch (oscillator) {
         case 1:
-          { 
-           
+          {
+
             if (osc1_portamentoSamples > 0 && notesPlaying > 0) {
               osc1_portamentoIncrement = (freq - frequency1) / osc1_portamentoSamples;
               osc1_currentPortamentoSample = 0;
             } else {
               frequency1 = freq;
             }
-            
-            
+
+
             osc1_dt = frequency1 / AUDIO_SAMPLE_RATE_EXACT;
           }
           break;
@@ -167,7 +167,13 @@ class AudioBandlimitedOsci : public AudioStream
     }
 
     void pulseWidth(uint8_t oscillator, float pulseWidth) {
-      //pulseWidth gets limited to [0.001, 0.999] later on
+
+      if (pulseWidth < 0.001f) {
+        pulseWidth = 0.001f;
+      } else if (pulseWidth > 0.999f) {
+        pulseWidth = 0.999f;
+      }
+
       switch (oscillator) {
         case 1: {
             pulseWidth1 = pulseWidth;
@@ -280,16 +286,16 @@ class AudioBandlimitedOsci : public AudioStream
 
     audio_block_t *inputQueueArray[6];
 
-    private:
-    
+  private:
+
     uint8_t notesPlaying;
 
     float frequency1 = 0;
-    float pulseWidth1 = 0; 
+    float pulseWidth1 = 0;
     float osc1_freq = 0;
     float osc1_pulseWidth = 0.5;
     float osc1_gain = 0;
-    uint8_t osc1_waveform = 0;
+    uint8_t osc1_waveform = 1;
     float osc1_output = 0;
     float osc1_blepDelay = 0;
     float osc1_t = 0;
@@ -302,7 +308,6 @@ class AudioBandlimitedOsci : public AudioStream
     float osc1_portamentoIncrement = 0;
     uint64_t osc1_portamentoSamples = 0;
     uint64_t osc1_currentPortamentoSample = 0;
-    
 
 
     float frequency2 = 0;
@@ -310,7 +315,7 @@ class AudioBandlimitedOsci : public AudioStream
     float osc2_freq = 0;
     float osc2_pulseWidth = 0.5;
     float osc2_gain = 0;
-    uint8_t osc2_waveform = 0;
+    uint8_t osc2_waveform = 1;
     float osc2_output = 0;
     float osc2_blepDelay = 0;
     float osc2_t = 0;
@@ -323,14 +328,13 @@ class AudioBandlimitedOsci : public AudioStream
     float osc2_portamentoIncrement = 0;
     uint64_t osc2_portamentoSamples = 0;
     uint64_t osc2_currentPortamentoSample = 0;
-    
 
     float frequency3 = 0;
     float pulseWidth3 = 0;
     float osc3_freq = 0;
     float osc3_pulseWidth = 0.5;
     float osc3_gain = 0;
-    uint8_t osc3_waveform = 0;
+    uint8_t osc3_waveform = 1;
     float osc3_output = 0;
     float osc3_blepDelay = 0;
     float osc3_t = 0;
@@ -343,6 +347,5 @@ class AudioBandlimitedOsci : public AudioStream
     float osc3_portamentoIncrement = 0;
     uint64_t osc3_portamentoSamples = 0;
     uint64_t osc3_currentPortamentoSample = 0;
-    
 
 };

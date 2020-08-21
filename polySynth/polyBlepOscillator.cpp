@@ -42,7 +42,7 @@ void AudioBandlimitedOsci::update() {
     }
 
     //frequency Modulation:
-    if (fm1 && osc1_pitchModAmount > 0) {
+    if (fm1 && osc1_pitchModAmount > 0.0f) {
       int32_t n = fm1->data[i] * osc1_pitchModAmount;
       int32_t ipart = n >> 27;
       n = n & 0x7FFFFFF;
@@ -52,22 +52,24 @@ void AudioBandlimitedOsci::update() {
       n = n + 715827882;
 
       uint32_t scale = n >> (15 - ipart);
-      osc1_freq = frequency1 * scale * 0.00003051757;
+      osc1_freq = frequency1 * scale * 0.00003051757f;
     } else {
       osc1_freq = frequency1;
     }
 
-    osc1_dt = osc1_freq / AUDIO_SAMPLE_RATE_EXACT;
+    osc1_dt = osc1_freq * 0.00002267574f;  // divided by AUDIO_SAMPLE_RATE_EXACT;
 
     //pulse Width Modulation:
     if (pwm1) {
-      osc1_pulseWidth = pulseWidth1 + ((float)pwm1->data[i] * 0.00003051757) * osc1_pwmAmount;
+      osc1_pulseWidth = pulseWidth1 + ((float)pwm1->data[i] * 0.00003051757f) * osc1_pwmAmount;
+
+      if (osc1_pulseWidth < 0.001f) {
+        osc1_pulseWidth = 0.001f;
+      } else if (osc1_pulseWidth > 0.999f) {
+        osc1_pulseWidth = 0.999f;
+      }
     }
-    if (osc1_pulseWidth < 0.001) {
-      osc1_pulseWidth = 0.001;
-    } else if (osc1_pulseWidth > 0.999) {
-      osc1_pulseWidth = 0.999;
-    }
+
 
     //oscillator 2:
     if (osc2_portamentoSamples > 0 && osc2_currentPortamentoSample++ < osc2_portamentoSamples) {
@@ -86,22 +88,24 @@ void AudioBandlimitedOsci::update() {
       n = n + 715827882;
 
       uint32_t scale = n >> (15 - ipart);
-      osc2_freq = frequency2 * scale * 0.00003051757;
+      osc2_freq = frequency2 * scale * 0.00003051757f;
     } else {
       osc2_freq = frequency2;
     }
 
-    osc2_dt = osc2_freq / AUDIO_SAMPLE_RATE_EXACT;
+    osc2_dt = osc2_freq * 0.00002267574f;
 
     //pulse Width Modulation:
     if (pwm2) {
-      osc2_pulseWidth = pulseWidth2 + ((float)pwm2->data[i] * 0.00003051757) * osc2_pwmAmount;
+      osc2_pulseWidth = pulseWidth2 + ((float)pwm2->data[i] * 0.00003051757f) * osc2_pwmAmount;
+
+      if (osc2_pulseWidth < 0.001f) {
+        osc2_pulseWidth = 0.001f;
+      } else if (osc2_pulseWidth > 0.999f) {
+        osc2_pulseWidth = 0.999f;
+      }
     }
-    if (osc2_pulseWidth < 0.001) {
-      osc2_pulseWidth = 0.001;
-    } else if (osc2_pulseWidth > 0.999) {
-      osc2_pulseWidth = 0.999;
-    }
+
 
     //oscillator 3:
     if (osc3_portamentoSamples > 0 && osc3_currentPortamentoSample++ < osc3_portamentoSamples) {
@@ -120,28 +124,30 @@ void AudioBandlimitedOsci::update() {
       n = n + 715827882;
 
       uint32_t scale = n >> (15 - ipart);
-      osc3_freq = frequency3 * scale * 0.00003051757;
+      osc3_freq = frequency3 * scale * 0.00003051757f;
     } else {
       osc3_freq = frequency3;
     }
 
-    osc3_dt = osc3_freq / AUDIO_SAMPLE_RATE_EXACT;
+    osc3_dt = osc3_freq * 0.00002267574f;
 
     //pulse Width Modulation:
     if (pwm3) {
-      osc3_pulseWidth = pulseWidth3 + ((float)pwm3->data[i] * 0.00003051757) * osc3_pwmAmount;
+      osc3_pulseWidth = pulseWidth3 + ((float)pwm3->data[i] * 0.00003051757f) * osc3_pwmAmount;
+
+      if (osc3_pulseWidth < 0.001f) {
+        osc3_pulseWidth = 0.001f;
+      } else if (osc3_pulseWidth > 0.999f) {
+        osc3_pulseWidth = 0.999f;
+      }
     }
-    if (osc3_pulseWidth < 0.001) {
-      osc3_pulseWidth = 0.001;
-    } else if (osc3_pulseWidth > 0.999) {
-      osc3_pulseWidth = 0.999;
-    }
+
 
     osc1Step(); // This steps actually all oscillators.
 
-    out1->data[i] = (int16_t)(osc1_output *  32768.0 * osc1_gain);
-    out2->data[i] = (int16_t)(osc2_output *  32768.0 * osc2_gain);
-    out3->data[i] = (int16_t)(osc3_output *  32768.0 * osc3_gain);
+    out1->data[i] = (int16_t)(osc1_output *  32768.0f * osc1_gain);
+    out2->data[i] = (int16_t)(osc2_output *  32768.0f * osc2_gain);
+    out3->data[i] = (int16_t)(osc3_output *  32768.0f * osc3_gain);
   }
 
   transmit(out1, 0);
@@ -199,8 +205,9 @@ inline void AudioBandlimitedOsci::osc3Step() {
 
   osc3_t += osc3_dt;
 
-  //triangle and sawtooth wave
+
   switch (osc3_waveform) {
+    //sine
     case 0: {
         /*
           The sine function is a bit processor intensive, I just added it for the sake of completeness.
@@ -210,7 +217,7 @@ inline void AudioBandlimitedOsci::osc3Step() {
         osc3_output = arm_sin_f32(osc3_t * TWO_PI);
       }
       break;
-
+    //triangle and sawtooth wave
     case 1: {
         while (true) {
 
@@ -226,9 +233,9 @@ inline void AudioBandlimitedOsci::osc3Step() {
             osc3_pulseStage = true;
           }
           if (osc3_pulseStage) {
-            if (osc3_t < 1) break;
+            if (osc3_t < 1.0f) break;
 
-            float x = (osc3_t - 1) / osc3_dt;
+            float x = (osc3_t - 1.0f) / osc3_dt;
 
             float scale = osc3_dt / (osc3_pulseWidth - osc3_pulseWidth * osc3_pulseWidth);
 
@@ -236,16 +243,16 @@ inline void AudioBandlimitedOsci::osc3Step() {
             osc3_blepDelay  +=   scale * blamp1(x);
 
             osc3_pulseStage = false;
-            osc3_t -= 1;
+            osc3_t -= 1.0f;
           }
         }
 
         float naiveWave;
 
         if (osc3_t <= osc3_pulseWidth) {
-          naiveWave = 2 * osc3_t / osc3_pulseWidth - 1;
+          naiveWave = 2.0f * osc3_t / osc3_pulseWidth - 1.0f;
         } else {
-          naiveWave =  - 2 * (osc3_t - osc3_pulseWidth) / (1 - osc3_pulseWidth) + 1;
+          naiveWave =  -2.0f * (osc3_t - osc3_pulseWidth) / (1 - osc3_pulseWidth) + 1.0f;
         }
 
         osc3_blepDelay += naiveWave;
@@ -272,24 +279,24 @@ inline void AudioBandlimitedOsci::osc3Step() {
           }
           if (osc3_pulseStage)
           {
-            if (osc3_t < 1) break;
+            if (osc3_t < 1.0f) break;
 
-            float x = (osc3_t - 1) / osc3_dt;
+            float x = (osc3_t - 1.0f) / osc3_dt;
 
             osc3_output    += blep0(x);
             osc3_blepDelay += blep1(x);
 
             osc3_pulseStage = false;
-            osc3_t -= 1;
+            osc3_t -= 1.0f;
           }
         }
 
         float naiveWave;
 
         if (osc3_pulseStage) {
-          naiveWave = -1.0;
+          naiveWave = -1.0f;
         } else {
-          naiveWave = 1.0;
+          naiveWave = 1.0f;
         }
 
         osc3_blepDelay += naiveWave;
@@ -305,19 +312,19 @@ inline void AudioBandlimitedOsci::osc3Step() {
         if (osc3_t < osc3_dt) {
 
           float x = osc3_t / osc3_dt;
-          osc3_output -= 0.5 * blep0(x);
-          osc3_blepDelay -= 0.5 * blep1(x);
+          osc3_output -= 0.5f * blep0(x);
+          osc3_blepDelay -= 0.5f * blep1(x);
         }
 
         osc3_blepDelay += osc3_t;
 
-        osc3_output = osc3_output * 2 - 1;
+        osc3_output = osc3_output * 2.0f - 1.0f;
       }
       break;
 
     default : {
         osc3_t -= floorf(osc3_t);
-        osc3_output = 0;
+        osc3_output = 0.0f;
       }
   }
 }
@@ -325,19 +332,19 @@ inline void AudioBandlimitedOsci::osc3Step() {
 inline void AudioBandlimitedOsci::osc3Sync(float x) {
 
   osc3_output = osc3_blepDelay;
-  osc3_blepDelay = 0;
+  osc3_blepDelay = 0.0f;
 
   float scale = osc3_dt / osc1_dt;
   scale -= floorf(scale);
-  if (scale <= 0) {
-    scale = 1;
+  if (scale <= 0.0f) {
+    scale = 1.0f;
   }
 
-  osc3_output   -= 0.5 * scale * blep0(x);
-  osc3_blepDelay  -= 0.5 * scale * blep1(x);
+  osc3_output   -= 0.5f * scale * blep0(x);
+  osc3_blepDelay  -= 0.5f * scale * blep1(x);
 
   //increase slave phase by partial sample
-  float dt = (1 - x) * osc3_dt;
+  float dt = (1.0f - x) * osc3_dt;
   osc3_t += dt;
   osc3_t -= floorf(osc3_t);
 
@@ -347,8 +354,8 @@ inline void AudioBandlimitedOsci::osc3Sync(float x) {
 
     //process transition for the slave
     float x2 = osc3_t / osc3_dt;
-    osc3_output   -= 0.5 * blep0(x2);
-    osc3_blepDelay  -= 0.5 * blep1(x2);
+    osc3_output   -= 0.5f * blep0(x2);
+    osc3_blepDelay  -= 0.5f * blep1(x2);
   }
 
   //reset slave phase:
@@ -356,25 +363,26 @@ inline void AudioBandlimitedOsci::osc3Sync(float x) {
 
   osc3_blepDelay += osc3_t;
 
-  osc3_output = osc3_output * 2 - 1;
+  osc3_output = osc3_output * 2.0f - 1.0f;
 
 }
 
 inline void AudioBandlimitedOsci::osc2Step() {
 
   osc2_output = osc2_blepDelay;
-  osc2_blepDelay = 0;
+  osc2_blepDelay = 0.0f;
 
   osc2_t += osc2_dt;
 
-  //triangle and sawtooth wave
+
   switch (osc2_waveform) {
+    //sine
     case 0: {
         osc2_t -= floorf(osc2_t);
         osc2_output = arm_sin_f32(osc2_t * TWO_PI);
       }
       break;
-
+    //triangle and sawtooth wave
     case 1: {
         while (true) {
 
@@ -390,9 +398,9 @@ inline void AudioBandlimitedOsci::osc2Step() {
             osc2_pulseStage = true;
           }
           if (osc2_pulseStage) {
-            if (osc2_t < 1) break;
+            if (osc2_t < 1.0f) break;
 
-            float x = (osc2_t - 1) / osc2_dt;
+            float x = (osc2_t - 1.0f) / osc2_dt;
 
             float scale = osc2_dt / (osc2_pulseWidth - osc2_pulseWidth * osc2_pulseWidth);
 
@@ -400,16 +408,16 @@ inline void AudioBandlimitedOsci::osc2Step() {
             osc2_blepDelay  +=   scale * blamp1(x);
 
             osc2_pulseStage = false;
-            osc2_t -= 1;
+            osc2_t -= 1.0f;
           }
         }
 
         float naiveWave;
 
         if (osc2_t <= osc2_pulseWidth) {
-          naiveWave = 2 * osc2_t / osc2_pulseWidth - 1;
+          naiveWave = 2.0f * osc2_t / osc2_pulseWidth - 1.0f;
         } else {
-          naiveWave =  - 2 * (osc2_t - osc2_pulseWidth) / (1 - osc2_pulseWidth) + 1;
+          naiveWave =  - 2.0f * (osc2_t - osc2_pulseWidth) / (1.0f - osc2_pulseWidth) + 1.0f;
         }
 
         osc2_blepDelay += naiveWave;
@@ -436,15 +444,15 @@ inline void AudioBandlimitedOsci::osc2Step() {
           }
           if (osc2_pulseStage)
           {
-            if (osc2_t < 1) break;
+            if (osc2_t < 1.0f) break;
 
-            float x = (osc2_t - 1) / osc2_dt;
+            float x = (osc2_t - 1.0f) / osc2_dt;
 
             osc2_output    += blep0(x);
             osc2_blepDelay += blep1(x);
 
             osc2_pulseStage = false;
-            osc2_t -= 1;
+            osc2_t -= 1.0f;
           }
         }
 
@@ -469,19 +477,19 @@ inline void AudioBandlimitedOsci::osc2Step() {
         if (osc2_t < osc2_dt) {
 
           float x = osc2_t / osc2_dt;
-          osc2_output -= 0.5 * blep0(x);
-          osc2_blepDelay -= 0.5 * blep1(x);
+          osc2_output -= 0.5f * blep0(x);
+          osc2_blepDelay -= 0.5f * blep1(x);
         }
 
         osc2_blepDelay += osc2_t;
 
-        osc2_output = osc2_output * 2 - 1;
+        osc2_output = osc2_output * 2.0f - 1.0f;
       }
       break;
 
     default : {
         osc2_t -= floorf(osc2_t);
-        osc2_output = 0;
+        osc2_output = 0.0f;
       }
   }
 }
@@ -490,30 +498,30 @@ inline void AudioBandlimitedOsci::osc2Sync(float x) {
 
 
   osc2_output = osc2_blepDelay;
-  osc2_blepDelay = 0;
+  osc2_blepDelay = 0.0f;
 
   float scale = osc2_dt / osc1_dt;
   scale -= floorf(scale);
-  if (scale <= 0) {
-    scale = 1;
+  if (scale <= 0.0f) {
+    scale = 1.0f;
   }
 
-  osc2_output   -= scale * 0.5 * blep0(x);
-  osc2_blepDelay  -= scale * 0.5 * blep1(x);
+  osc2_output   -= scale * 0.5f * blep0(x);
+  osc2_blepDelay  -= scale * 0.5f * blep1(x);
 
   //increase slave phase by partial sample
-  float dt = (1 - x) * osc2_dt;
+  float dt = (1.0f - x) * osc2_dt;
   osc2_t += dt;
   osc2_t -= floorf(osc2_t);
 
-  if (osc2_t < dt && scale < 1) {
+  if (osc2_t < dt && scale < 1.0f) {
     osc2_t += x * osc2_dt;
     osc2_t -= floorf(osc2_t);
 
     //process transition for the slave
     float x2 = osc2_t / osc2_dt;
-    osc2_output   -= 0.5 * blep0(x2);
-    osc2_blepDelay  -= 0.5 * blep1(x2);
+    osc2_output   -= 0.5f * blep0(x2);
+    osc2_blepDelay  -= 0.5f * blep1(x2);
   }
 
   //reset slave phase:
@@ -522,7 +530,7 @@ inline void AudioBandlimitedOsci::osc2Sync(float x) {
   osc2_blepDelay += osc2_t;
 
 
-  osc2_output = osc2_output * 2 - 1;
+  osc2_output = osc2_output * 2.0f - 1.0f;
 
 
 }
@@ -531,31 +539,33 @@ inline void AudioBandlimitedOsci::osc2Sync(float x) {
 inline void AudioBandlimitedOsci::osc1Step() {
 
   osc1_output = osc1_blepDelay;
-  osc1_blepDelay = 0;
+  osc1_blepDelay = 0.0f;
 
   osc1_t += osc1_dt;
 
 
   if (osc2_waveform != 2) {
     osc2Step();
-  } else if (osc1_t < 1) {
+  } else if (osc1_t < 1.0f) {
     osc2Step();
   }
 
   if (osc3_waveform != 2) {
     osc3Step();
-  } else if (osc1_t < 1) {
+  } else if (osc1_t < 1.0f) {
     osc3Step();
   }
 
-  //triangle and sawtooth wave
+
   switch (osc1_waveform) {
+    //sine
     case 0: {
         osc1_t -= floorf(osc1_t);
         osc1_output = arm_sin_f32(osc1_t * TWO_PI);
       }
       break;
 
+    //triangle and sawtooth wave
     case 1 :
       {
         while (true) {
@@ -572,9 +582,9 @@ inline void AudioBandlimitedOsci::osc1Step() {
             osc1_pulseStage = true;
           }
           if (osc1_pulseStage) {
-            if (osc1_t < 1) break;
+            if (osc1_t < 1.0f) break;
 
-            float x = (osc1_t - 1) / osc1_dt;
+            float x = (osc1_t - 1.0f) / osc1_dt;
 
             if (osc2_waveform == 3) {
               osc2Sync(x);
@@ -589,16 +599,16 @@ inline void AudioBandlimitedOsci::osc1Step() {
             osc1_blepDelay  +=   scale * blamp1(x);
 
             osc1_pulseStage = false;
-            osc1_t -= 1;
+            osc1_t -= 1.0f;
           }
         }
 
         float naiveWave;
 
         if (osc1_t <= osc1_pulseWidth) {
-          naiveWave = 2 * osc1_t / osc1_pulseWidth - 1;
+          naiveWave = 2.0f * osc1_t / osc1_pulseWidth - 1.0f;
         } else {
-          naiveWave =  - 2 * (osc1_t - osc1_pulseWidth) / (1 - osc1_pulseWidth) + 1;
+          naiveWave =  -2.0f * (osc1_t - osc1_pulseWidth) / (1 - osc1_pulseWidth) + 1.0f;
         }
 
         osc1_blepDelay += naiveWave;
@@ -625,9 +635,9 @@ inline void AudioBandlimitedOsci::osc1Step() {
           }
           if (osc1_pulseStage)
           {
-            if (osc1_t < 1) break;
+            if (osc1_t < 1.0f) break;
 
-            float x = (osc1_t - 1) / osc1_dt;
+            float x = (osc1_t - 1.0f) / osc1_dt;
 
             if (osc2_waveform == 3) {
               osc2Sync(x);
@@ -640,7 +650,7 @@ inline void AudioBandlimitedOsci::osc1Step() {
             osc1_blepDelay += blep1(x);
 
             osc1_pulseStage = false;
-            osc1_t -= 1;
+            osc1_t -= 1.0f;
           }
         }
         float naiveWave;
@@ -659,7 +669,7 @@ inline void AudioBandlimitedOsci::osc1Step() {
 
     default : {
         osc1_t -= floorf(osc1_t);
-        osc1_output = 0;
+        osc1_output = 0.0f;
       }
   }
 
