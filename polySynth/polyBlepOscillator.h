@@ -168,10 +168,10 @@ class AudioBandlimitedOsci : public AudioStream
 
     void pulseWidth(uint8_t oscillator, float pulseWidth) {
 
-      if (pulseWidth < 0.001f) {
-        pulseWidth = 0.001f;
-      } else if (pulseWidth > 0.999f) {
-        pulseWidth = 0.999f;
+      if (pulseWidth < 0.01f) {
+        pulseWidth = 0.01f;
+      } else if (pulseWidth > 0.99f) {
+        pulseWidth = 0.99f;
       }
 
       switch (oscillator) {

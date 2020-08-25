@@ -63,10 +63,10 @@ void AudioBandlimitedOsci::update() {
     if (pwm1) {
       osc1_pulseWidth = pulseWidth1 + ((float)pwm1->data[i] * 0.00003051757f) * osc1_pwmAmount;
 
-      if (osc1_pulseWidth < 0.001f) {
-        osc1_pulseWidth = 0.001f;
-      } else if (osc1_pulseWidth > 0.999f) {
-        osc1_pulseWidth = 0.999f;
+      if (osc1_pulseWidth < 0.01f) {
+        osc1_pulseWidth = 0.01f;
+      } else if (osc1_pulseWidth > 0.99f) {
+        osc1_pulseWidth = 0.99f;
       }
     }
 
@@ -99,10 +99,10 @@ void AudioBandlimitedOsci::update() {
     if (pwm2) {
       osc2_pulseWidth = pulseWidth2 + ((float)pwm2->data[i] * 0.00003051757f) * osc2_pwmAmount;
 
-      if (osc2_pulseWidth < 0.001f) {
-        osc2_pulseWidth = 0.001f;
-      } else if (osc2_pulseWidth > 0.999f) {
-        osc2_pulseWidth = 0.999f;
+      if (osc2_pulseWidth < 0.01f) {
+        osc2_pulseWidth = 0.01f;
+      } else if (osc2_pulseWidth > 0.99f) {
+        osc2_pulseWidth = 0.99f;
       }
     }
 
@@ -135,10 +135,10 @@ void AudioBandlimitedOsci::update() {
     if (pwm3) {
       osc3_pulseWidth = pulseWidth3 + ((float)pwm3->data[i] * 0.00003051757f) * osc3_pwmAmount;
 
-      if (osc3_pulseWidth < 0.001f) {
-        osc3_pulseWidth = 0.001f;
-      } else if (osc3_pulseWidth > 0.999f) {
-        osc3_pulseWidth = 0.999f;
+      if (osc3_pulseWidth < 0.01f) {
+        osc3_pulseWidth = 0.01f;
+      } else if (osc3_pulseWidth > 0.99f) {
+        osc3_pulseWidth = 0.99f;
       }
     }
 
